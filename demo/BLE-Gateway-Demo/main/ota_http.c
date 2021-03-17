@@ -52,7 +52,7 @@ void ota_task(void * pvParameter)
 		esp_http_client_config_t config;
 		if(!user_ota_url)
 		{
-			config.url = create_string("http://cloud-dev.gl-inet.cn/gl-s10_app.bin", strlen("http://cloud-dev.gl-inet.cn/gl-s10_app.bin"));
+			config.url = create_string("http://firmware.gl-inet.cn/iot/s10/gl-s10_app.bin", strlen("http://firmware.gl-inet.cn/iot/s10/gl-s10_app.bin"));
 		}else{
 			printf("user set url\n");
 			config.url = user_ota_url;
