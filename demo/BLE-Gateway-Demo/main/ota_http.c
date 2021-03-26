@@ -29,52 +29,88 @@
 #include "freertos/task.h"
 #include "freertos/FreeRTOS.h"
 
-
 #define BUFFSIZE 1024
-static char ota_write_data[BUFFSIZE + 1] = { 0 };
-char* user_ota_url = NULL;
+static char ota_write_data[BUFFSIZE + 1] = {0};
+char *user_ota_url = NULL;
 
 EventGroupHandle_t ota_group;
 int OTA_START_BIT = BIT0;
 
 void initialise_ota(void)
 {
-	ota_group = xEventGroupCreate();
-	xTaskCreate(ota_task, "ota_task", 8192, NULL, 5, NULL);
+    ota_group = xEventGroupCreate();
+    xTaskCreate(ota_task, "ota_task", 8192, NULL, 5, NULL);
 }
 
-void ota_task(void * pvParameter)
+esp_err_t _http_event_handler(esp_http_client_event_t *evt)
 {
-	while(1)
-	{
-		xEventGroupWaitBits(ota_group, OTA_START_BIT, false, true, portMAX_DELAY);
-		
-		esp_http_client_config_t config;
-		if(!user_ota_url)
-		{
-			config.url = create_string("http://firmware.gl-inet.cn/iot/s10/gl-s10_app.bin", strlen("http://firmware.gl-inet.cn/iot/s10/gl-s10_app.bin"));
-		}else{
-			printf("user set url\n");
-			config.url = user_ota_url;
-		}
+    switch(evt->event_id) {
+        case HTTP_EVENT_ERROR:
+            ESP_LOGD(TAG, "HTTP_EVENT_ERROR");
+            break;
+        case HTTP_EVENT_ON_CONNECTED:
+            ESP_LOGD(TAG, "HTTP_EVENT_ON_CONNECTED");
+            break;
+        case HTTP_EVENT_HEADER_SENT:
+            ESP_LOGD(TAG, "HTTP_EVENT_HEADER_SENT");
+            break;
+        case HTTP_EVENT_ON_HEADER:
+            ESP_LOGD(TAG, "HTTP_EVENT_ON_HEADER, key=%s, value=%s", evt->header_key, evt->header_value);
+            break;
+        case HTTP_EVENT_ON_DATA:
+            ESP_LOGD(TAG, "HTTP_EVENT_ON_DATA, len=%d", evt->data_len);
+            break;
+        case HTTP_EVENT_ON_FINISH:
+            ESP_LOGD(TAG, "HTTP_EVENT_ON_FINISH");
+            break;
+        case HTTP_EVENT_DISCONNECTED:
+            ESP_LOGD(TAG, "HTTP_EVENT_DISCONNECTED");
+            break;
+    }
+    return ESP_OK;
+}
 
-		esp_err_t ret = esp_http_ota(&config);
-		if (ret == ESP_OK) {
-			// vTaskDelay(1000 / portTICK_PERIOD_MS);
-			send_OTA_status(0);
-			ESP_LOGE(TAG, "Firmware upgrade successed");
-			vTaskDelay(2000 / portTICK_PERIOD_MS);
+void ota_task(void *pvParameter)
+{
+    while (1)
+    {
+        xEventGroupWaitBits(ota_group, OTA_START_BIT, false, true, portMAX_DELAY);
 
-			esp_restart();
-		} else {
-			normal_working_led = true;
-			LED_flash_level = 0;
-			vTaskDelay(5000 / portTICK_PERIOD_MS);
-			send_OTA_status(1);
-			ESP_LOGE(TAG, "Firmware upgrade failed");
-			xEventGroupClearBits(ota_group, OTA_START_BIT);
-		}
-	}
+        esp_http_client_config_t config={
+            .event_handler = _http_event_handler,
+            .skip_cert_common_name_check = true,
+        };
+
+        if (!user_ota_url)
+        {
+            config.url = create_string("http://firmware.gl-inet.cn/iot/s10/gl-s10_app.bin", strlen("http://firmware.gl-inet.cn/iot/s10/gl-s10_app.bin"));
+        }
+        else
+        {
+            printf("user set url\n");
+            config.url = user_ota_url;
+        }
+
+        esp_err_t ret = esp_http_ota(&config);
+        if (ret == ESP_OK)
+        {
+            // vTaskDelay(1000 / portTICK_PERIOD_MS);
+            send_OTA_status(0);
+            ESP_LOGE(TAG, "Firmware upgrade successed");
+            vTaskDelay(2000 / portTICK_PERIOD_MS);
+
+            esp_restart();
+        }
+        else
+        {
+            normal_working_led = true;
+            LED_flash_level = 0;
+            vTaskDelay(5000 / portTICK_PERIOD_MS);
+            send_OTA_status(1);
+            ESP_LOGE(TAG, "Firmware upgrade failed");
+            xEventGroupClearBits(ota_group, OTA_START_BIT);
+        }
+    }
 }
 
 static void http_cleanup(esp_http_client_handle_t client)
@@ -85,6 +121,8 @@ static void http_cleanup(esp_http_client_handle_t client)
 
 esp_err_t esp_http_ota(const esp_http_client_config_t *config)
 {
+    esp_err_t err;
+
     if (!config) {
         ESP_LOGE(TAG, "esp_http_client config not found");
         return ESP_ERR_INVALID_ARG;
@@ -96,7 +134,7 @@ esp_err_t esp_http_ota(const esp_http_client_config_t *config)
         return ESP_FAIL;
     }
 
-    esp_err_t err = esp_http_client_open(client, 0);
+    err = esp_http_client_open(client, 0);
     if (err != ESP_OK) {
         esp_http_client_cleanup(client);
         ESP_LOGE(TAG, "Failed to open HTTP connection: %s", esp_err_to_name(err));
@@ -154,9 +192,9 @@ esp_err_t esp_http_ota(const esp_http_client_config_t *config)
         }
     }
     // free(upgrade_data_buf);
-    http_cleanup(client); 
+    http_cleanup(client);
     ESP_LOGD(TAG, "Total binary data length writen: %d", binary_file_len);
-    
+
     esp_err_t ota_end_err = esp_ota_end(update_handle);
     if (ota_write_err != ESP_OK) {
         ESP_LOGE(TAG, "Error: esp_ota_write failed! err=0x%d", err);
@@ -171,7 +209,7 @@ esp_err_t esp_http_ota(const esp_http_client_config_t *config)
         ESP_LOGE(TAG, "esp_ota_set_boot_partition failed! err=0x%d", err);
         return err;
     }
-    ESP_LOGI(TAG, "esp_ota_set_boot_partition succeeded"); 
+    ESP_LOGI(TAG, "esp_ota_set_boot_partition succeeded");
 
     return ESP_OK;
 }
