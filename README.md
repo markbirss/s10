@@ -7,17 +7,17 @@ GL-S10 is a WiFi-BLE gateway using ESP32 as the master MCU. It can connect to su
 
 ## Directory Structure
 ```
-─ app_configuration_tool            								#Configuration tool of ble gateway
+─ app_configuration_tool  #Configuration tool of ble gateway
 │   └── android
 │       └── apk
 ├── demo
-│   └── BLE-Gateway-Demo            							#Source code of ble gateway demo
+│   └── BLE-Gateway-Demo  #Source code of ble gateway demo
 │
 ├── docs
 │   ├── GL-S10 二次开发指南 V1.2.pdf
 │   ├── GL-S10 BLE-Gateway User Guide.pdf
 │   └── GL-S10 Datasheet CN V1.0.pdf
-└── VERSION_FILE													#Revision information record
+└── VERSION_FILE          #Revision information record
 ```
 ## How to use
 If you want to know the s10 hardware parameters, please refer to the `GL-S10 Datasheet CN`( docs-GL-S10 Datasheet CN.docx )
