@@ -17,7 +17,7 @@ GL-S10 is a WiFi-BLE gateway using ESP32 as the master MCU. It can connect to su
 ```
 # Prerequisites
 
-本教程是基于ubuntu 20.10版本搭建的，建议使用该版本及以上版本搭建环境，要注意的是低于这个版本可能会存在兼容问题。
+This tutorial is built on Ubuntu 20.10, and it is recommended that you use this or higher version to build your environment.
 
 ![image-20210419115603753](docs/001.png)
 
@@ -77,21 +77,21 @@ make all
 
 ## Firmware writing
 
-1.这里需要准备一个USB-TTL 这里我们用的是Ai-Thinker的USB-T1(CP2102) [CP2102驱动链接(**windos**)](https://docs.ai-thinker.com/_media/tools/serial_driver_windos.7z)
+1.We need to prepare a USB-TTL here we are using the AI - fruit USB-T1(CP2102)。 [CP2102 driver link(**windos**)](https://docs.ai-thinker.com/_media/tools/serial_driver_windos.7z)
 
 <img src="docs/009.png" alt="image-20210419152748217" style="zoom:50%;" />
 
 <img src="docs/010.png" alt="image-20210419152858222" style="zoom:51%;" />
 
-2.以下是我们GL_S10 PCB上的烧入引脚分布：
+2.The following is the burn in pin distribution on our GL S10 PCB：
 
 <img src="docs/011.png" alt="image-20210419154151250"  />
 
-3.我们需要将GL-S10和PC通过USB-T1连接上：
+3.We need to connect GL-S10 and PC via USB-T1：
 
 ![image-20210419160329072](docs/012.png)
 
-4.查看USB-TTL否连接到Linux下同时赋予权限:
+4.Check whether USB-TTL is connected to Linux and grant permissions:
 
 ```
 ll /dev/ttyUSB*
@@ -100,7 +100,7 @@ sudo chmod 777 /dev/ttyUSB0
 
 ![image-20210419164304842](docs/013.png)
 
-5.当设备确认连接后就可以开始写入固件了：
+5.When the device confirms the connection, it can begin writing the firmware：
 
 ```
 make flash
@@ -120,7 +120,7 @@ make monitor
 
 ## OTA
 
-GL-S10的OTA是通过http访问服务器获取固件，相关操作步骤见[GL-S10 BLE-Gateway User Guide](docs/GL-S10 BLE-Gateway User Guide.pdf)
+The OTA of GL-S10 is to access the server via HTTP to obtain the firmware. See the relevant operation steps.[GL-S10 BLE-Gateway User Guide](docs/GL-S10 BLE-Gateway User Guide.pdf)
 
 
 
