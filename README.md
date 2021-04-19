@@ -125,6 +125,6 @@ The OTA of GL-S10 is to access the server via HTTP to obtain the firmware. See t
 
 
 # How to use
-If you want to know the s10 hardware parameters, please refer to the [GL-S10_Datasheet_CN](docs/GL-S10 Datasheet CN.pdf)
+If you want to know the s10 hardware parameters, please refer to the [GL-S10 Datasheet CN](docs/GL-S10_Datasheet_CN.pdf)
 
 If you want to know how to use the ble gateway, please refer to the [GL-S10 BLE-Gateway User Guide](docs/GL-S10_BLE-Gateway_User_Guide.pdf)
