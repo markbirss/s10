@@ -77,7 +77,7 @@ make all
 
 ## Firmware writing
 
-1.We need to prepare a USB-TTL here we are using the AI - fruit USB-T1(CP2102)。 [CP2102 driver link(**windos**)](https://docs.ai-thinker.com/_media/tools/serial_driver_windos.7z)
+1.We need to prepare a USB-TTL here we are using the ai-thinker USB-T1(CP2102)。 [CP2102 driver link(**windos**)](https://docs.ai-thinker.com/_media/tools/serial_driver_windos.7z)
 
 <img src="docs/009.png" alt="image-20210419152748217" style="zoom:50%;" />
 
