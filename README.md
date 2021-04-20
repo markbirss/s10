@@ -87,7 +87,7 @@ make all
 
 <img src="docs/011.png" alt="image-20210419154151250"  />
 
-3.We need to connect GL-S10 and PC via USB-T1：
+3.We need to connect GL-S10 and PC via USB-TTL：
 
 ![image-20210419160329072](docs/012.png)
 
